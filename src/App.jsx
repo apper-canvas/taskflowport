@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 
 function App() {
+import Kanban from './pages/Kanban'
   return (
     <div className="min-h-screen bg-gradient-to-br from-surface-50 via-primary/5 to-secondary/5 dark:from-surface-900 dark:via-surface-800 dark:to-surface-900">
       <Routes>
@@ -31,3 +32,12 @@ function App() {
 }
 
 export default App
+                  <Link
+                    to="/kanban"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-surface-600 dark:text-surface-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                  >
+                    <ApperIcon name="Columns" className="w-5 h-5" />
+                    <span className="font-medium">Kanban</span>
+                  </Link>
+                  
+                <Route path="/kanban" element={<Kanban />} />

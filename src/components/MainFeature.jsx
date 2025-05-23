@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { format, isToday, isTomorrow, isPast } from 'date-fns'
 import ApperIcon from './ApperIcon'
+import KanbanBoard from './KanbanBoard'
 
 function MainFeature() {
   const [tasks, setTasks] = useState([
@@ -39,6 +40,7 @@ function MainFeature() {
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState('all')
   const [editingTask, setEditingTask] = useState(null)
+  const [viewMode, setViewMode] = useState('list') // 'list' or 'kanban'
 
   const priorities = {
     low: { color: 'bg-green-500', label: 'Low', icon: 'ArrowDown' },
@@ -210,7 +212,34 @@ function MainFeature() {
         className="glass-morphism rounded-2xl p-4 sm:p-6 mb-6"
       >
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <motion.button
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                  viewMode === 'list' ? 'bg-primary text-white' : 'bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ApperIcon name="List" className="w-4 h-4" />
+                List
+              </motion.button>
+              
+              <motion.button
+                onClick={() => setViewMode('kanban')}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                  viewMode === 'kanban' ? 'bg-primary text-white' : 'bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ApperIcon name="Columns" className="w-4 h-4" />
+                Board
+              </motion.button>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-2">
             {['all', 'pending', 'completed', 'overdue'].map((filterType) => (
               <motion.button
                 key={filterType}
@@ -226,6 +255,7 @@ function MainFeature() {
                 {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
               </motion.button>
             ))}
+            </div>
           </div>
 
           <motion.button
@@ -362,7 +392,23 @@ function MainFeature() {
         )}
       </AnimatePresence>
 
+      {/* Kanban Board View */}
+      {viewMode === 'kanban' && (
+        <KanbanBoard
+          tasks={filteredTasks}
+          onTaskUpdate={(taskId, updates) => {
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t))
+            toast.success('Task updated successfully!')
+          }}
+          onTaskEdit={handleEdit}
+          onTaskDelete={handleDelete}
+          priorities={priorities}
+          statuses={statuses}
+        />
+      )}
+
       {/* Tasks List */}
+      {viewMode === 'list' && (
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -475,6 +521,7 @@ function MainFeature() {
           </motion.div>
         )}
       </motion.div>
+      )}
     </div>
   )
 }
